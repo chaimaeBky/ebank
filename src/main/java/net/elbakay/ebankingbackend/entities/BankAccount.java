@@ -9,7 +9,7 @@ import net.elbakay.ebankingbackend.enums.AccountStatus;
 import java.util.Date;
 import java.util.List;
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)//singletable : les classes qui herite de cette classe vont etres stockés dans une seule table
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)//singletable : les classes qui herite de cette classe vont etres stockés dans une seule table
 @DiscriminatorColumn(name="TYPE" , length = 4 )
 @Data
 @AllArgsConstructor @NoArgsConstructor
@@ -22,6 +22,6 @@ public abstract class BankAccount {
     private AccountStatus status;
     @ManyToOne
     private Customer customer;
-    @OneToMany(mappedBy = "bankAccount")
+    @OneToMany(mappedBy = "bankAccount" , fetch = FetchType.EAGER)
     private List<AccountOperation> accountOperations;
 }

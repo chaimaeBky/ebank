@@ -1,10 +1,7 @@
 package net.elbakay.ebankingbackend;
 
 import lombok.Builder;
-import net.elbakay.ebankingbackend.entities.AccountOperation;
-import net.elbakay.ebankingbackend.entities.CurrentAccount;
-import net.elbakay.ebankingbackend.entities.Customer;
-import net.elbakay.ebankingbackend.entities.SavingAccount;
+import net.elbakay.ebankingbackend.entities.*;
 import net.elbakay.ebankingbackend.enums.AccountStatus;
 import net.elbakay.ebankingbackend.enums.OperationType;
 import net.elbakay.ebankingbackend.repositories.AccountOperationRepository;
@@ -27,6 +24,35 @@ public class EbankingBackendApplication {
         SpringApplication.run(EbankingBackendApplication.class, args);
     }
     @Bean
+    CommandLineRunner commandLineRunner(BankAccountRepository bankAccountRepository){
+        return args -> {
+            BankAccount bankAccount=
+                    bankAccountRepository.findById("253943a4-7c53-427d-b9d6-12df5ab683fe").orElse(null);
+            if(bankAccount!=null) {
+                System.out.println("*********");
+                System.out.println(bankAccount.getId());
+                System.out.println(bankAccount.getBalance());
+                System.out.println(bankAccount.getStatus());
+                System.out.println(bankAccount.getCreatedDate());
+                System.out.println(bankAccount.getCustomer().getName());
+                System.out.println(bankAccount.getClass().getSimpleName());
+                if (bankAccount instanceof CurrentAccount) {
+                    System.out.println("Over draft=>" + ((CurrentAccount) bankAccount).getOverDraft());
+                } else if (bankAccount instanceof SavingAccount) {
+                    System.out.println("Rate=>" + ((SavingAccount) bankAccount).getInterestRate());
+                }
+
+                bankAccount.getAccountOperations().forEach(op -> {
+                    System.out.println("=======================");
+                    System.out.println(op.getType() + "\t" + op.getOperationDate() + "\t" + op.getAmount());
+
+
+                });
+
+            }
+        };
+    }
+    //@Bean
     CommandLineRunner start(CustomerRepository customerRepository ,
                             BankAccountRepository bankAccountRepository,
                             AccountOperationRepository accountOperationRepository){
@@ -66,7 +92,11 @@ public class EbankingBackendApplication {
                  accountOperation.setBankAccount(acc);
                  accountOperationRepository.save(accountOperation);
              }
+
+
+
         });
+
         };
     }
 }
